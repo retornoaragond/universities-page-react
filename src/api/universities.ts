@@ -16,6 +16,11 @@ export const fetchUniversities = async (
   return response.data;
 };
 
+export const getUniversity = async (id: string) => {
+  const response = await axios.get(`${API_BASE_URL}/universities/${id}`);
+  return response.data;
+};
+
 export const deleteUniversity = async (id: string) => {
   const response = await axios.delete(`${API_BASE_URL}/universities/${id}`);
   return response.data;
