@@ -2,14 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchUniversities } from '../api/universities';
 import { useState } from 'react';
 import { EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { useSearch } from '../context/SearchContext';
 
 export const UniversityTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  
+  const { searchTerm } = useSearch();
 
   const { data, isPending, error } = useQuery({
-    queryKey: ['universities', currentPage],
-    queryFn: () => fetchUniversities(currentPage, ''),
+    queryKey: ['universities', currentPage, searchTerm],
+    queryFn: () => fetchUniversities(currentPage, searchTerm),
   });
 
   if (isPending) return <div>Loading...</div>;
@@ -52,16 +53,24 @@ export const UniversityTable = () => {
                   .join(', ')}
               </td>
               <td className="border border-gray-300 p-2">
-              <button onClick={() => (window.location.href = `/universities/${university.id}`)}>
-                <EyeIcon className="h-5 w-5 text-blue-500" />
-              </button>
-              <button onClick={() => (window.location.href = `/universities/${university.id}/edit`)}>
-                <PencilIcon className="h-5 w-5 text-green-500" />
-              </button>
-              <button onClick={() => ""}>
-                <TrashIcon className="h-5 w-5 text-red-500" />
-              </button>
-            </td>
+                <button
+                  onClick={() =>
+                    (window.location.href = `/universities/${university.id}`)
+                  }
+                >
+                  <EyeIcon className="h-5 w-5 text-blue-500" />
+                </button>
+                <button
+                  onClick={() =>
+                    (window.location.href = `/universities/${university.id}/edit`)
+                  }
+                >
+                  <PencilIcon className="h-5 w-5 text-green-500" />
+                </button>
+                <button onClick={() => ''}>
+                  <TrashIcon className="h-5 w-5 text-red-500" />
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
