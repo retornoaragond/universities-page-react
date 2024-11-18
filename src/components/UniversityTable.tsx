@@ -1,37 +1,70 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchUniversities } from '../api/universities';
 import { useState } from 'react';
-import { EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useSearch } from '../context/SearchContext';
+import { Button } from './shared/Button';
+import { UniversitiesResponse } from '../types/university';
 
 export const UniversityTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { searchTerm } = useSearch();
 
-  const { data, isPending, error } = useQuery({
-    queryKey: ['universities', currentPage, searchTerm],
-    queryFn: () => fetchUniversities(currentPage, searchTerm),
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  const { data, isPending, error } = useQuery<UniversitiesResponse, Error>({
+    queryKey: ['universities', searchTerm, currentPage, sortBy, sortOrder],
+    queryFn: () =>
+      fetchUniversities(currentPage, searchTerm, sortBy, sortOrder),
   });
+
+  const meta = data?.meta;
+
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+    setCurrentPage(1);
+  };
 
   if (isPending) return <div>Loading...</div>;
   if (error instanceof Error) return <div>Error: {error.message}</div>;
-
-  const meta = data.meta;
 
   return (
     <div>
       <table className="w-full border-collapse border border-gray-300 text-left">
         <thead>
           <tr>
-            <th className="border border-gray-300 p-2">Name</th>
-            <th className="border border-gray-300 p-2">Location</th>
-            <th className="border border-gray-300 p-2">Website</th>
+            <th
+              className="cursor-pointer border border-gray-300 p-2"
+              onClick={() => handleSort('name')}
+            >
+              Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+            </th>
+            <th
+              className="cursor-pointer border border-gray-300 p-2"
+              onClick={() => handleSort('location')}
+            >
+              Location{' '}
+              {sortBy === 'location' && (sortOrder === 'asc' ? '↑' : '↓')}
+            </th>
+            <th
+              className="cursor-pointer border border-gray-300 p-2"
+              onClick={() => handleSort('website_url')}
+            >
+              Website{' '}
+              {sortBy === 'website_url' && (sortOrder === 'asc' ? '↑' : '↓')}
+            </th>
             <th className="border border-gray-300 p-2">Contact Emails</th>
             <th className="border border-gray-300 p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {data.universities.map((university) => (
+          {data?.universities.map((university) => (
             <tr key={university.id} className="hover:bg-gray-50">
               <td className="border border-gray-300 p-2">{university.name}</td>
               <td className="border border-gray-300 p-2">
@@ -48,51 +81,67 @@ export const UniversityTable = () => {
                 </a>
               </td>
               <td className="border border-gray-300 p-2">
-                {university.contact_emails
-                  .map((emailObj) => emailObj.email)
-                  .join(', ')}
+                {university.contact_emails.length > 0 && (
+                  <div>
+                    <a
+                      href={`mailto:${university.contact_emails[0].email}`}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {university.contact_emails[0].email}
+                    </a>
+                    {university.contact_emails.length > 1 && (
+                      <span className="text-gray-500 ml-2">
+                        +{university.contact_emails.length - 1}
+                      </span>
+                    )}
+                  </div>
+                )}
               </td>
               <td className="border border-gray-300 p-2">
-                <button
+                <Button
                   onClick={() =>
                     (window.location.href = `/universities/${university.id}`)
                   }
+                  isIcon
+                  className="p-1"
                 >
                   <EyeIcon className="h-5 w-5 text-blue-500" />
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() =>
                     (window.location.href = `/universities/${university.id}/edit`)
                   }
+                  isIcon
+                  className="p-1"
                 >
                   <PencilIcon className="h-5 w-5 text-green-500" />
-                </button>
-                <button onClick={() => ''}>
+                </Button>
+                <Button onClick={() => ''} isIcon className="p-1">
                   <TrashIcon className="h-5 w-5 text-red-500" />
-                </button>
+                </Button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="flex justify-between items-center mt-4">
-        {meta.prev && (
+      <div className="flex justify-center items-center mt-4">
+        {meta?.prev && (
           <button
             onClick={() => setCurrentPage((prev) => prev - 1)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className=" mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Previous
+            <ChevronLeftIcon className="h-5 w-5 text-white" />
           </button>
         )}
         <span className="text-gray-600">
-          Page {meta.page} of {meta.pages}
+          Page {meta?.page} of {meta?.pages}
         </span>
-        {meta.next && (
+        {meta?.next && (
           <button
             onClick={() => setCurrentPage((prev) => prev + 1)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className=" ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Next
+             <ChevronRightIcon className="h-5 w-5 text-white" />
           </button>
         )}
       </div>
