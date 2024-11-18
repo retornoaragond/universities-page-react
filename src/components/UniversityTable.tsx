@@ -1,25 +1,44 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetchUniversities } from '../api/universities';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deleteUniversity, fetchUniversities } from '../api/universities';
 import { useState } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  EyeIcon,
+  PencilIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import { useSearch } from '../context/SearchContext';
 import { Button } from './shared/Button';
-import { UniversitiesResponse } from '../types/university';
+import { UniversitiesResponse, University } from '../types/university';
+import { DeleteModal } from './DeleteModal';
 
 export const UniversityTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { searchTerm } = useSearch();
+  const queryClient = useQueryClient();
 
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [deleteModal, setDeleteModal] = useState<University | null>(null);
 
   const { data, isPending, error } = useQuery<UniversitiesResponse, Error>({
     queryKey: ['universities', searchTerm, currentPage, sortBy, sortOrder],
     queryFn: () =>
       fetchUniversities(currentPage, searchTerm, sortBy, sortOrder),
   });
-
   const meta = data?.meta;
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteUniversity(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['universities'] });
+      setDeleteModal(null);
+    },
+    onError: () => {
+      alert('An error occurred while deleting the university.');
+    },
+  });
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
@@ -29,6 +48,16 @@ export const UniversityTable = () => {
       setSortOrder('asc');
     }
     setCurrentPage(1);
+  };
+
+  const handleDelete = (university: University) => {
+    setDeleteModal(university);
+  };
+
+  const confirmDelete = () => {
+    if (deleteModal) {
+      deleteMutation.mutate(deleteModal.id.toString());
+    }
   };
 
   if (isPending) return <div>Loading...</div>;
@@ -90,8 +119,8 @@ export const UniversityTable = () => {
                       {university.contact_emails[0].email}
                     </a>
                     {university.contact_emails.length > 1 && (
-                      <span className="text-gray-500 ml-2">
-                        +{university.contact_emails.length - 1}
+                      <span className="text-gray-500">
+                        ,... +{university.contact_emails.length - 1}
                       </span>
                     )}
                   </div>
@@ -116,7 +145,11 @@ export const UniversityTable = () => {
                 >
                   <PencilIcon className="h-5 w-5 text-green-500" />
                 </Button>
-                <Button onClick={() => ''} isIcon className="p-1">
+                <Button
+                  onClick={() => handleDelete(university)}
+                  isIcon
+                  className="p-1"
+                >
                   <TrashIcon className="h-5 w-5 text-red-500" />
                 </Button>
               </td>
@@ -141,10 +174,19 @@ export const UniversityTable = () => {
             onClick={() => setCurrentPage((prev) => prev + 1)}
             className=" ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-             <ChevronRightIcon className="h-5 w-5 text-white" />
+            <ChevronRightIcon className="h-5 w-5 text-white" />
           </button>
         )}
       </div>
+      {deleteModal && (
+        <DeleteModal
+          isOpen={!!deleteModal}
+          onClose={() => setDeleteModal(null)}
+          onConfirm={confirmDelete}
+          title="Delete University"
+          message={`Are you sure you want to delete ${deleteModal.name}? This action cannot be undone.`}
+        />
+      )}
     </div>
   );
 };
