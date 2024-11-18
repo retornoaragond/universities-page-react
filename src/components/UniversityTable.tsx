@@ -1,16 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchUniversities } from '../api/universities';
-import { useState } from "react";
+import { useState } from 'react';
+import { EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export const UniversityTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["universities", currentPage],
-    queryFn: () => fetchUniversities(currentPage, ""),
+  const { data, isPending, error } = useQuery({
+    queryKey: ['universities', currentPage],
+    queryFn: () => fetchUniversities(currentPage, ''),
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isPending) return <div>Loading...</div>;
   if (error instanceof Error) return <div>Error: {error.message}</div>;
 
   const meta = data.meta;
@@ -24,13 +26,16 @@ export const UniversityTable = () => {
             <th className="border border-gray-300 p-2">Location</th>
             <th className="border border-gray-300 p-2">Website</th>
             <th className="border border-gray-300 p-2">Contact Emails</th>
+            <th className="border border-gray-300 p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {data.universities.map((university) => (
             <tr key={university.id} className="hover:bg-gray-50">
               <td className="border border-gray-300 p-2">{university.name}</td>
-              <td className="border border-gray-300 p-2">{university.location}</td>
+              <td className="border border-gray-300 p-2">
+                {university.location}
+              </td>
               <td className="border border-gray-300 p-2">
                 <a
                   href={university.website_url}
@@ -44,8 +49,19 @@ export const UniversityTable = () => {
               <td className="border border-gray-300 p-2">
                 {university.contact_emails
                   .map((emailObj) => emailObj.email)
-                  .join(", ")}
+                  .join(', ')}
               </td>
+              <td className="border border-gray-300 p-2">
+              <button onClick={() => (window.location.href = `/universities/${university.id}`)}>
+                <EyeIcon className="h-5 w-5 text-blue-500" />
+              </button>
+              <button onClick={() => (window.location.href = `/universities/${university.id}/edit`)}>
+                <PencilIcon className="h-5 w-5 text-green-500" />
+              </button>
+              <button onClick={() => ""}>
+                <TrashIcon className="h-5 w-5 text-red-500" />
+              </button>
+            </td>
             </tr>
           ))}
         </tbody>
