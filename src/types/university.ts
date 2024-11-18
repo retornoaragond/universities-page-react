@@ -25,3 +25,10 @@ export type UniversitiesResponse = {
     prev_url?: string;
   };
 };
+
+export type UniversityFormData = {
+  name: string;
+  location: string;
+  website_url: string;
+  contact_emails: ContactEmail[];
+};
