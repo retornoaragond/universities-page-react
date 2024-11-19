@@ -1,10 +1,13 @@
-import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createUniversity } from '../../api/universities';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createUniversity, getUniversity, updateUniversity } from '../../api/universities';
 import { UniversityFormData } from '../../types/university';
 import { BackButton } from '../../components/shared/BackButton';
+import { useParams } from 'react-router-dom';
 
 export const UniversityForm = () => {
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = Boolean(id);
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState<UniversityFormData>({
@@ -14,12 +17,30 @@ export const UniversityForm = () => {
     contact_emails: [{ email: '' }],
   });
 
+  const { data, isLoading: isLoadingData } = useQuery({
+    queryKey: ["university", id],
+    queryFn: () => getUniversity(id!),
+    enabled: isEditMode,
+  });
+
   const mutation = useMutation({
-    mutationFn: (formData: UniversityFormData) => createUniversity(formData),
+    mutationFn: (formData: UniversityFormData) =>
+      isEditMode ? updateUniversity(id!, formData) : createUniversity(formData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['universities'] });
+      queryClient.invalidateQueries({ queryKey: ["universities"] });
     },
   });
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        name: data.name,
+        location: data.location,
+        website_url: data.website_url,
+        contact_emails: data.contact_emails || [],
+      });
+    }
+  }, [data]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
