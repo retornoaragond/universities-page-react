@@ -1,50 +1,156 @@
-# React + TypeScript + Vite
+# Universities Page 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
 
-Currently, two official plugins are available:
+This is a React-based frontend application designed to interact with a backend API. The application uses `.env` files for environment-specific configurations. Follow the steps below to set up and run the application.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **React**: Built using React and modern web technologies.
+- **Environment Variables**: Configurable using `.env` files for different environments.
+- **Reusable Components**: Modular and scalable structure.
 
-- Configure the top-level `parserOptions` property like this:
+---
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Prerequisites
+
+Ensure you have the following installed on your system:
+
+- **Node.js** (v14 or higher)
+- **npm**
+
+---
+
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd <project-directory>
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 2. Install Dependencies
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm install
 ```
+
+### 3. Configure Environment Variables
+
+- The project uses a `.env` file for configuration.
+- A template file `.env.example` is included in the repository.
+- Copy `.env.example` to `.env` and update the variables as needed:
+
+```bash
+cp .env.example .env
+```
+
+#### Example `.env` Variables
+
+```plaintext
+VITE_APP_API_URL=http://localhost:5000
+VITE_APP_ENV=development
+```
+
+> **Note**: Replace the values with your actual configuration.
+
+### 4. Start the Development Server
+
+```bash
+npm start
+# or
+yarn start
+```
+
+The application will be available at [http://localhost:5173/](http://localhost:5173/).
+
+---
+
+## Available Scripts
+
+### Run Development Server
+
+```bash
+npm run dev
+```
+
+Launches the app in development mode.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+Builds the app for production to the `build/` folder.
+
+---
+
+## Folder Structure
+
+```
+├── src
+│   ├── components   # Reusable React components
+│   ├── pages        # Page components
+│   ├── hooks        # Custom React hooks
+│   ├── services     # API calls and utilities
+│   ├── styles       # Global and component-specific styles
+│   └── App.js       # Main app component
+├── public
+│   ├── index.html   # HTML template
+│   └── favicon.ico  # App icon
+├── .env.example      # Environment variable template
+└── README.md         # Documentation
+```
+
+---
+
+## Environment Variables
+
+### Required Variables:
+
+- `REACT_APP_API_URL`: Base URL of the backend API.
+- `REACT_APP_ENV`: Application environment (`development`, `staging`, `production`).
+
+### Optional Variables:
+
+- `REACT_APP_FEATURE_FLAG`: Enable/disable specific features.
+
+---
+
+## Deployment
+
+1. **Build the application**:
+   ```bash
+   npm run build
+   ```
+2. **Serve the build**:
+   Use any static server (e.g., `serve`, `nginx`) to serve the `build/` folder.
+
+---
+
+## Contributing
+
+1. Fork the repository.
+2. Create a new branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m "Add your message here"
+   ```
+4. Push to your branch:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. Open a Pull Request.
+
+---
+
+## Questions or Support
+
+For any questions or issues, please contact the project maintainer.
