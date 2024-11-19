@@ -9,6 +9,7 @@ const AppRoutes = () => (
     <Route path="/universities" element={<UniversityList />} />
     <Route path="/universities/:id" element={<UniversityDetails />} />
     <Route path="/universities/new" element={<UniversityForm />} />
+    <Route path="/universities/:id/edit" element={<UniversityForm />} />
   </Routes>
 );
 
