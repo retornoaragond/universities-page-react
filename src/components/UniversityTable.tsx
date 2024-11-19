@@ -64,117 +64,211 @@ export const UniversityTable = () => {
   if (error instanceof Error) return <div>Error: {error.message}</div>;
 
   return (
-    <div>
-      <table className="w-full border-collapse border border-gray-300 text-left">
-        <thead>
-          <tr>
-            <th
-              className="cursor-pointer border border-gray-300 p-2"
-              onClick={() => handleSort('name')}
-            >
-              Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
-            </th>
-            <th
-              className="cursor-pointer border border-gray-300 p-2"
-              onClick={() => handleSort('location')}
-            >
-              Location{' '}
-              {sortBy === 'location' && (sortOrder === 'asc' ? '↑' : '↓')}
-            </th>
-            <th
-              className="cursor-pointer border border-gray-300 p-2"
-              onClick={() => handleSort('website_url')}
-            >
-              Website{' '}
-              {sortBy === 'website_url' && (sortOrder === 'asc' ? '↑' : '↓')}
-            </th>
-            <th className="border border-gray-300 p-2">Contact Emails</th>
-            <th className="border border-gray-300 p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.universities.map((university) => (
-            <tr key={university.id} className="hover:bg-gray-50">
-              <td className="border border-gray-300 p-2">{university.name}</td>
-              <td className="border border-gray-300 p-2">
-                {university.location}
-              </td>
-              <td className="border border-gray-300 p-2">
-                <a
-                  href={university.website_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  {university.website_url}
-                </a>
-              </td>
-              <td className="border border-gray-300 p-2">
-                {university.contact_emails.length > 0 && (
-                  <div>
+    <div className="px-4 sm:px-6 lg:px-8">
+      <div className="-mx-4 mt-2 ring-1 ring-gray-300 sm:mx-0 sm:rounded-lg">
+        <table className="min-w-full divide-y divide-gray-300">
+          <thead>
+            <tr>
+              <th
+                scope="col"
+                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 cursor-pointer lg:hidden"
+                onClick={() => handleSort('name')}
+              >
+                University{' '}
+                {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
+              <th
+                scope="col"
+                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 cursor-pointer lg:hidden hidden sm:table-cell"
+                onClick={() => handleSort('website_url')}
+              >
+                Contact Info{' '}
+                {sortBy === 'website_url' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
+
+              <th
+                scope="col"
+                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 cursor-pointer hidden lg:table-cell"
+                onClick={() => handleSort('name')}
+              >
+                Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
+              <th
+                scope="col"
+                className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell cursor-pointer"
+                onClick={() => handleSort('location')}
+              >
+                Location{' '}
+                {sortBy === 'location' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
+              <th
+                scope="col"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 cursor-pointer hidden lg:table-cell"
+                onClick={() => handleSort('website_url')}
+              >
+                Website{' '}
+                {sortBy === 'website_url' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
+              <th
+                scope="col"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 hidden lg:table-cell"
+              >
+                Contact Emails
+              </th>
+              <th
+                scope="col"
+                className="relative py-3.5 pl-3 pr-4 sm:pr-6 text-right hidden lg:table-cell"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.universities.map((university, index) => (
+              <tr
+                key={university.id}
+                className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+              >
+                <td className="py-4 pl-4 pr-3 text-xs font-medium text-gray-900 sm:pl-6 lg:hidden">
+                  <div>{university.name}</div>
+                  <div className="text-gray-400">{university.location}</div>
+                  <div className="text-gray-400 sm:hidden">
                     <a
-                      href={`mailto:${university.contact_emails[0].email}`}
-                      className="text-blue-500 hover:underline"
+                      href={university.website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      {university.contact_emails[0].email}
+                      {university.website_url}
                     </a>
-                    {university.contact_emails.length > 1 && (
-                      <span className="text-gray-500">
-                        ,... +{university.contact_emails.length - 1}
+                  </div>
+                  <div className="text-gray-400 sm:hidden">
+                    Emails:{' '}
+                    {university.contact_emails.length > 0 ? (
+                      <span>
+                        {university.contact_emails[0].email}
+                        {university.contact_emails.length > 1 && (
+                          <span className="text-gray-400">
+                            {' '}
+                            +{university.contact_emails.length - 1} more
+                          </span>
+                        )}
                       </span>
+                    ) : (
+                      'No emails'
                     )}
                   </div>
-                )}
-              </td>
-              <td className="border border-gray-300 p-2">
-                <Button
-                  onClick={() =>
-                    (window.location.href = `/universities/${university.id}`)
-                  }
-                  isIcon
-                  className="p-1"
-                >
-                  <EyeIcon className="h-5 w-5 text-blue-500" />
-                </Button>
-                <Button
-                  onClick={() =>
-                    (window.location.href = `/universities/${university.id}/edit`)
-                  }
-                  isIcon
-                  className="p-1"
-                >
-                  <PencilIcon className="h-5 w-5 text-green-500" />
-                </Button>
-                <Button
-                  onClick={() => handleDelete(university)}
-                  isIcon
-                  className="p-1"
-                >
-                  <TrashIcon className="h-5 w-5 text-red-500" />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                </td>
+                <td className="py-4 pl-4 pr-3 text-xs font-medium text-gray-900 sm:pl-6 lg:hidden hidden sm:table-cell">
+                  <div>
+                    <a
+                      href={university.website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {university.website_url}
+                    </a>
+                  </div>
+                  <div className="text-gray-400">
+                    Emails:{' '}
+                    {university.contact_emails.length > 0 ? (
+                      <span>
+                        {university.contact_emails[0].email}
+                        {university.contact_emails.length > 1 && (
+                          <span className="text-gray-400">
+                            {' '}
+                            +{university.contact_emails.length - 1} more
+                          </span>
+                        )}
+                      </span>
+                    ) : (
+                      'No emails'
+                    )}
+                  </div>
+                </td>
+                <td className="hidden py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:table-cell">
+                  {university.name}
+                </td>
+                <td className="hidden px-3 py-4 text-sm text-gray-500 lg:table-cell ">
+                  {university.location}
+                </td>
+                <td className="px-3 py-4 text-sm text-blue-600 hover:underline hidden lg:table-cell">
+                  <a
+                    href={university.website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {university.website_url}
+                  </a>
+                </td>
+                <td className="px-3 py-4 text-sm text-gray-500 hidden lg:table-cell">
+                  {university.contact_emails.length > 0 ? (
+                    <span>
+                      {university.contact_emails[0].email}
+                      {university.contact_emails.length > 1 && (
+                        <span className="text-gray-400">
+                          {' '}
+                          +{university.contact_emails.length - 1} more
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    'No emails'
+                  )}
+                </td>
+                <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                  <div className="flex justify-end space-x-2">
+                    <Button
+                      onClick={() =>
+                        (window.location.href = `/universities/${university.id}`)
+                      }
+                      isIcon
+                      className="p-1"
+                    >
+                      <EyeIcon className="h-5 w-5 text-blue-500" />
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        (window.location.href = `/universities/${university.id}/edit`)
+                      }
+                      isIcon
+                      className="p-1"
+                    >
+                      <PencilIcon className="h-5 w-5 text-green-500" />
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(university)}
+                      isIcon
+                      className="p-1"
+                    >
+                      <TrashIcon className="h-5 w-5 text-red-500" />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="flex justify-center items-center mt-4">
         {meta?.prev && (
           <button
             onClick={() => setCurrentPage((prev) => prev - 1)}
-            className=" mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="mr-2 flex items-center space-x-1 px-4 py-2 text-sm text-blue-500 hover:text-blue-700"
           >
-            <ChevronLeftIcon className="h-5 w-5 text-white" />
+            <ChevronLeftIcon className="h-5 w-5" />
+            <span>Previous</span>
           </button>
         )}
-        <span className="text-gray-600">
+        <span className="text-sm text-gray-500">
           Page {meta?.page} of {meta?.pages}
         </span>
         {meta?.next && (
           <button
             onClick={() => setCurrentPage((prev) => prev + 1)}
-            className=" ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="ml-2 flex items-center space-x-1 px-4 py-2 text-sm text-blue-500 hover:text-blue-700"
           >
-            <ChevronRightIcon className="h-5 w-5 text-white" />
+            <span>Next</span>
+            <ChevronRightIcon className="h-5 w-5" />
           </button>
         )}
       </div>

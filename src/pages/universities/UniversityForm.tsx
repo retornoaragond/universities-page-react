@@ -1,11 +1,16 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { getUniversity, createUniversity, updateUniversity } from "../../api/universities";
-import { University, UniversityFormData } from "../../types/university";
-import { BackButton } from "../../components/shared/BackButton";
-import { z } from "zod";
-import { universitySchema } from "../../validation/universitySchema";
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import {
+  getUniversity,
+  createUniversity,
+  updateUniversity,
+} from '../../api/universities';
+import { University, UniversityFormData } from '../../types/university';
+import { z } from 'zod';
+import { universitySchema } from '../../validation/universitySchema';
+import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { Button } from '../../components/shared/Button';
 
 const UniversityForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,16 +20,16 @@ const UniversityForm = () => {
   const isEditMode = Boolean(id);
 
   const [formData, setFormData] = useState<UniversityFormData>({
-    name: "",
-    location: "",
-    website_url: "",
-    contact_emails: [{ email: "" }],
+    name: '',
+    location: '',
+    website_url: '',
+    contact_emails: [{ email: '' }],
   });
 
   const [errors, setErrors] = useState<Record<string, string | string[]>>({});
 
   const { data, isLoading: isLoadingData } = useQuery<University, Error>({
-    queryKey: ["university", id],
+    queryKey: ['university', id],
     queryFn: () => getUniversity(id!),
     enabled: isEditMode,
   });
@@ -44,8 +49,8 @@ const UniversityForm = () => {
     mutationFn: (formData: UniversityFormData) =>
       isEditMode ? updateUniversity(id!, formData) : createUniversity(formData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["universities"] });
-      navigate("/universities");
+      queryClient.invalidateQueries({ queryKey: ['universities'] });
+      navigate('/universities');
     },
   });
 
@@ -65,7 +70,7 @@ const UniversityForm = () => {
   const handleAddEmail = () => {
     setFormData((prev) => ({
       ...prev,
-      contact_emails: [...prev.contact_emails, { email: "" }],
+      contact_emails: [...prev.contact_emails, { email: '' }],
     }));
   };
 
@@ -88,8 +93,8 @@ const UniversityForm = () => {
         error.errors.forEach((err) => {
           if (err.path.length === 1) {
             validationErrors[err.path[0] as string] = err.message;
-          } else if (err.path[0] === "contact_emails") {
-            validationErrors.contact_emails = "Invalid email(s) in the list.";
+          } else if (err.path[0] === 'contact_emails') {
+            validationErrors.contact_emails = 'Invalid email(s) in the list.';
           }
         });
         setErrors(validationErrors);
@@ -104,115 +109,133 @@ const UniversityForm = () => {
     mutation.mutate(formData);
   };
 
-  if (isEditMode && isLoadingData) return <div>Loading...</div>;
+  if (isEditMode && isLoadingData)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-gray-500">Loading...</p>
+      </div>
+    );
 
   return (
-    <div style={{ padding: "20px" }}>
-      <BackButton />
-      <h1>{isEditMode ? "Edit University" : "Create University"}</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Name:</label>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-4xl mx-auto bg-white shadow-lg p-8 rounded-lg border border-gray-200 space-y-12"
+    >
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold text-gray-800">
+          {isEditMode ? 'Edit University' : 'Create University'}
+        </h2>
+
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Name
+          </label>
           <input
-            type="text"
+            id="name"
             name="name"
+            type="text"
             value={formData.name}
             onChange={handleChange}
-            style={{ padding: "5px", width: "100%" }}
+            className="mt-2 block w-full rounded-md py-1.5 pl-2 shadow-md border focus:border-blue-500 focus:ring-blue-500"
           />
-          {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
+          {errors.name && (
+            <p className="mt-2 text-sm text-red-500">{errors.name}</p>
+          )}
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Location:</label>
+
+        <div>
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Location
+          </label>
           <input
-            type="text"
+            id="location"
             name="location"
+            type="text"
             value={formData.location}
             onChange={handleChange}
-            style={{ padding: "5px", width: "100%" }}
+            className="mt-2 block w-full rounded-md py-1.5 pl-2 shadow-md border focus:border-blue-500 focus:ring-blue-500"
           />
-          {errors.location && <p style={{ color: "red" }}>{errors.location}</p>}
+          {errors.location && (
+            <p className="mt-2 text-sm text-red-500">{errors.location}</p>
+          )}
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Website URL:</label>
+
+        <div>
+          <label
+            htmlFor="website_url"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Website
+          </label>
           <input
-            type="text"
+            id="website_url"
             name="website_url"
+            type="text"
             value={formData.website_url}
             onChange={handleChange}
-            style={{ padding: "5px", width: "100%" }}
+            className="mt-2 block w-full rounded-md py-1.5 pl-2 shadow-md border focus:border-blue-500 focus:ring-blue-500"
           />
-          {errors.website_url && <p style={{ color: "red" }}>{errors.website_url}</p>}
+          {errors.website_url && (
+            <p className="mt-2 text-sm text-red-500">{errors.website_url}</p>
+          )}
         </div>
+
         <div>
-          <label>Contact Emails:</label>
+          <div className="flex items-center">
+            <label className="block text-sm font-medium text-gray-700">
+              Contact Emails
+            </label>
+            <Button className="p-1 ml-2" isIcon onClick={handleAddEmail}>
+              <PlusIcon className="h-5 w-5 text-blue" />
+            </Button>
+          </div>
+
           {formData.contact_emails.map((emailObj, index) => (
-            <div
-              key={index}
-              style={{ display: "flex", marginBottom: "10px" }}
-            >
+            <div key={index} className="flex items-center mt-2 space-x-2">
               <input
                 type="email"
                 value={emailObj.email}
                 onChange={(e) => handleEmailChange(index, e.target.value)}
-                style={{ padding: "5px", flex: 1 }}
+                className="flex-1 rounded-md py-1.5 pl-2 shadow-md border focus:border-blue-500 focus:ring-blue-500"
               />
-              <button
-                type="button"
+              <Button
                 onClick={() => handleRemoveEmail(index)}
-                style={{
-                  marginLeft: "10px",
-                  padding: "5px",
-                  backgroundColor: "red",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
+                isIcon
+                className="p-1"
               >
-                Remove
-              </button>
+                <TrashIcon className="h-5 w-5 text-red-500" />
+              </Button>
             </div>
           ))}
-          {errors.contact_emails && (
-            <p style={{ color: "red" }}>{errors.contact_emails}</p>
-          )}
-          <button
-            type="button"
-            onClick={handleAddEmail}
-            style={{
-              padding: "10px",
-              backgroundColor: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            Add Email
-          </button>
-        </div>
 
+          {errors.contact_emails && (
+            <p className="mt-2 text-sm text-red-500">{errors.contact_emails}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-x-4">
+        <button
+          type="button"
+          onClick={() => navigate('/universities')}
+          className="text-sm font-medium text-gray-700 hover:text-gray-900"
+        >
+          Cancel
+        </button>
         <button
           type="submit"
-          style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            backgroundColor: "#007BFF",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
+          className="rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600"
         >
-          {mutation.status === "pending"
-            ? "Saving..."
-            : isEditMode
-            ? "Update"
-            : "Create"}
+          {mutation.isPending ? 'Saving...' : isEditMode ? 'Update' : 'Create'}
         </button>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 };
 

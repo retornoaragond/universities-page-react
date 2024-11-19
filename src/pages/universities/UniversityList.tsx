@@ -12,7 +12,7 @@ export const UniversityList = () => {
       <div className=" flex justify-center">
         <h1 className="text-2xl  font-bold mb-4">University List</h1>
       </div>
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex justify-between items-center mt-4 sm:mx-8">
         <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <Button
           className="p-1 mb-4"
