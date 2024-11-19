@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { universitySchema } from '../../validation/universitySchema';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Button } from '../../components/shared/Button';
+import { Blocks } from 'react-loader-spinner';
 
 const UniversityForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -112,7 +113,15 @@ const UniversityForm = () => {
   if (isEditMode && isLoadingData)
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-gray-500">Loading...</p>
+        <Blocks
+          height="80"
+          width="80"
+          color="#4fa94d"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          visible={true}
+        />
       </div>
     );
 

@@ -12,6 +12,7 @@ import { useSearch } from '../context/SearchContext';
 import { Button } from './shared/Button';
 import { UniversitiesResponse, University } from '../types/university';
 import { DeleteModal } from './DeleteModal';
+import { Blocks } from 'react-loader-spinner';
 
 export const UniversityTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,7 +61,20 @@ export const UniversityTable = () => {
     }
   };
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Blocks
+          height="80"
+          width="80"
+          color="#4fa94d"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          visible={true}
+        />
+      </div>
+    );
   if (error instanceof Error) return <div>Error: {error.message}</div>;
 
   return (

@@ -5,6 +5,7 @@ import { getUniversity } from '../../api/universities';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { Button } from '../../components/shared/Button';
 import { BackButton } from '../../components/shared/BackButton';
+import { Blocks } from 'react-loader-spinner';
 
 export const UniversityDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,8 +17,16 @@ export const UniversityDetails = () => {
 
   if (isPending)
     return (
-      <div className="flex items-center justify-center min-h-screen text-lg">
-        Loading...
+      <div className="flex items-center justify-center min-h-screen">
+        <Blocks
+          height="80"
+          width="80"
+          color="#4fa94d"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          visible={true}
+        />
       </div>
     );
 
